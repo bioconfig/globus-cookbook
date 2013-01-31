@@ -42,9 +42,15 @@ case node.platform
     
 end
 
+if node.has_key?("globus") and node.globus.has_key?("repository_deb_url")
+  repo_url = node.globus.repository_deb_url
+else
+  repo_url = "http://www.globus.org/ftppub/gt5/5.1/5.1.1/installers/repo/globus-repository-#{distro_id}_0.0.1_all.deb"
+end
+
 remote_file "#{node[:scratch_dir]}/gt5_repository.deb" do
   action :create_if_missing 
-  source "http://www.globus.org/ftppub/gt5/5.1/5.1.1/installers/repo/globus-repository-#{distro_id}_0.0.1_all.deb"
+  source repo_url
   owner "root"
   group "root"    
   mode "0644"

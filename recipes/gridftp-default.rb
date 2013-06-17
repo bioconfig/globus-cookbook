@@ -22,8 +22,13 @@
 ##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-gp_domain = node[:topology][:domains][node[:domain_id]]
-gp_node   = gp_domain[:nodes][node[:node_id]]
+if node.has_key?(:topology)
+  gp_domain = node[:topology][:domains][node[:domain_id]]
+  gp_node   = gp_domain[:nodes][node[:node_id]]
+  public_ip = gp_node[:public_id]
+else
+  public_ip = nil
+end
 
 include_recipe "globus::gridftp-common"
 
@@ -33,7 +38,7 @@ template "/etc/xinetd.d/gsiftp" do
   owner "root"
   group "root"
   variables(
-    :public_ip => gp_node[:public_ip],
+    :public_ip => public_ip,
     :gc        => false
   )
   notifies :restart, "service[xinetd]"
